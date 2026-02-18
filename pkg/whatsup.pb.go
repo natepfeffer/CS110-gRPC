@@ -233,6 +233,106 @@ func (*Empty) Descriptor() ([]byte, []int) {
 	return file_pkg_whatsup_proto_rawDescGZIP(), []int{4}
 }
 
+// TODO: Create a ChatMessage message that contains two strings:
+// `user` and `body`.
+type ChatMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          string                 `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	Body          string                 `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChatMessage) Reset() {
+	*x = ChatMessage{}
+	mi := &file_pkg_whatsup_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChatMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChatMessage) ProtoMessage() {}
+
+func (x *ChatMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_whatsup_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChatMessage.ProtoReflect.Descriptor instead.
+func (*ChatMessage) Descriptor() ([]byte, []int) {
+	return file_pkg_whatsup_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ChatMessage) GetUser() string {
+	if x != nil {
+		return x.User
+	}
+	return ""
+}
+
+func (x *ChatMessage) GetBody() string {
+	if x != nil {
+		return x.Body
+	}
+	return ""
+}
+
+// TODO: Create a ChatMessages message that contains a repeated list of
+// of ChatMessage
+type ChatMessages struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Messages      []*ChatMessage         `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChatMessages) Reset() {
+	*x = ChatMessages{}
+	mi := &file_pkg_whatsup_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChatMessages) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChatMessages) ProtoMessage() {}
+
+func (x *ChatMessages) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_whatsup_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChatMessages.ProtoReflect.Descriptor instead.
+func (*ChatMessages) Descriptor() ([]byte, []int) {
+	return file_pkg_whatsup_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ChatMessages) GetMessages() []*ChatMessage {
+	if x != nil {
+		return x.Messages
+	}
+	return nil
+}
+
 var File_pkg_whatsup_proto protoreflect.FileDescriptor
 
 const file_pkg_whatsup_proto_rawDesc = "" +
@@ -247,9 +347,16 @@ const file_pkg_whatsup_proto_rawDesc = "" +
 	"sourceUser\"!\n" +
 	"\tAuthToken\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\"\a\n" +
-	"\x05Empty2\x9a\x01\n" +
+	"\x05Empty\"5\n" +
+	"\vChatMessage\x12\x12\n" +
+	"\x04user\x18\x01 \x01(\tR\x04user\x12\x12\n" +
+	"\x04body\x18\x02 \x01(\tR\x04body\"@\n" +
+	"\fChatMessages\x120\n" +
+	"\bmessages\x18\x01 \x03(\v2\x14.whatsup.ChatMessageR\bmessages2\xfa\x01\n" +
 	"\aWhatsUp\x124\n" +
-	"\aConnect\x12\x15.whatsup.Registration\x1a\x12.whatsup.AuthToken\x12)\n" +
+	"\aConnect\x12\x15.whatsup.Registration\x1a\x12.whatsup.AuthToken\x12.\n" +
+	"\x04Send\x12\x14.whatsup.ChatMessage\x1a\x10.whatsup.Success\x12.\n" +
+	"\x05Fetch\x12\x0e.whatsup.Empty\x1a\x15.whatsup.ChatMessages\x12)\n" +
 	"\x04List\x12\x0e.whatsup.Empty\x1a\x11.whatsup.UserList\x12.\n" +
 	"\n" +
 	"Disconnect\x12\x0e.whatsup.Empty\x1a\x10.whatsup.SuccessB\x11Z\x0fwhatsup/whatsupb\x06proto3"
@@ -266,26 +373,33 @@ func file_pkg_whatsup_proto_rawDescGZIP() []byte {
 	return file_pkg_whatsup_proto_rawDescData
 }
 
-var file_pkg_whatsup_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_pkg_whatsup_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_pkg_whatsup_proto_goTypes = []any{
 	(*Success)(nil),      // 0: whatsup.Success
 	(*UserList)(nil),     // 1: whatsup.UserList
 	(*Registration)(nil), // 2: whatsup.Registration
 	(*AuthToken)(nil),    // 3: whatsup.AuthToken
 	(*Empty)(nil),        // 4: whatsup.Empty
+	(*ChatMessage)(nil),  // 5: whatsup.ChatMessage
+	(*ChatMessages)(nil), // 6: whatsup.ChatMessages
 }
 var file_pkg_whatsup_proto_depIdxs = []int32{
-	2, // 0: whatsup.WhatsUp.Connect:input_type -> whatsup.Registration
-	4, // 1: whatsup.WhatsUp.List:input_type -> whatsup.Empty
-	4, // 2: whatsup.WhatsUp.Disconnect:input_type -> whatsup.Empty
-	3, // 3: whatsup.WhatsUp.Connect:output_type -> whatsup.AuthToken
-	1, // 4: whatsup.WhatsUp.List:output_type -> whatsup.UserList
-	0, // 5: whatsup.WhatsUp.Disconnect:output_type -> whatsup.Success
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	5, // 0: whatsup.ChatMessages.messages:type_name -> whatsup.ChatMessage
+	2, // 1: whatsup.WhatsUp.Connect:input_type -> whatsup.Registration
+	5, // 2: whatsup.WhatsUp.Send:input_type -> whatsup.ChatMessage
+	4, // 3: whatsup.WhatsUp.Fetch:input_type -> whatsup.Empty
+	4, // 4: whatsup.WhatsUp.List:input_type -> whatsup.Empty
+	4, // 5: whatsup.WhatsUp.Disconnect:input_type -> whatsup.Empty
+	3, // 6: whatsup.WhatsUp.Connect:output_type -> whatsup.AuthToken
+	0, // 7: whatsup.WhatsUp.Send:output_type -> whatsup.Success
+	6, // 8: whatsup.WhatsUp.Fetch:output_type -> whatsup.ChatMessages
+	1, // 9: whatsup.WhatsUp.List:output_type -> whatsup.UserList
+	0, // 10: whatsup.WhatsUp.Disconnect:output_type -> whatsup.Success
+	6, // [6:11] is the sub-list for method output_type
+	1, // [1:6] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_pkg_whatsup_proto_init() }
@@ -299,7 +413,7 @@ func file_pkg_whatsup_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pkg_whatsup_proto_rawDesc), len(file_pkg_whatsup_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

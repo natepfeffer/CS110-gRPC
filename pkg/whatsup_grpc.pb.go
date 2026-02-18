@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	WhatsUp_Connect_FullMethodName    = "/whatsup.WhatsUp/Connect"
+	WhatsUp_Send_FullMethodName       = "/whatsup.WhatsUp/Send"
+	WhatsUp_Fetch_FullMethodName      = "/whatsup.WhatsUp/Fetch"
 	WhatsUp_List_FullMethodName       = "/whatsup.WhatsUp/List"
 	WhatsUp_Disconnect_FullMethodName = "/whatsup.WhatsUp/Disconnect"
 )
@@ -31,6 +33,13 @@ type WhatsUpClient interface {
 	// User receives a connection token. This connection token is passed implicitly
 	// as metadata in all other calls, and is validated by a server-side interceptor.
 	Connect(ctx context.Context, in *Registration, opts ...grpc.CallOption) (*AuthToken, error)
+	// User sends a message to another user.
+	// DONE: add an RPC message called Send that takes a ChatMessage and expects a Success message
+	Send(ctx context.Context, in *ChatMessage, opts ...grpc.CallOption) (*Success, error)
+	// User fetches all messages addressed to themselves in batches. Batch size is
+	// defined by the server that implements this RPC, clients cannot control it.
+	// DONE: add an RPC message called Fetch that takes Empty and returns ChatMessages (note the plural!)
+	Fetch(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ChatMessages, error)
 	// User fetches a list of currently active users.
 	List(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*UserList, error)
 	// Sent by the user to inform the server they are leaving. The server can then
@@ -52,6 +61,26 @@ func (c *whatsUpClient) Connect(ctx context.Context, in *Registration, opts ...g
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AuthToken)
 	err := c.cc.Invoke(ctx, WhatsUp_Connect_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *whatsUpClient) Send(ctx context.Context, in *ChatMessage, opts ...grpc.CallOption) (*Success, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Success)
+	err := c.cc.Invoke(ctx, WhatsUp_Send_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *whatsUpClient) Fetch(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ChatMessages, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatMessages)
+	err := c.cc.Invoke(ctx, WhatsUp_Fetch_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,6 +114,13 @@ type WhatsUpServer interface {
 	// User receives a connection token. This connection token is passed implicitly
 	// as metadata in all other calls, and is validated by a server-side interceptor.
 	Connect(context.Context, *Registration) (*AuthToken, error)
+	// User sends a message to another user.
+	// DONE: add an RPC message called Send that takes a ChatMessage and expects a Success message
+	Send(context.Context, *ChatMessage) (*Success, error)
+	// User fetches all messages addressed to themselves in batches. Batch size is
+	// defined by the server that implements this RPC, clients cannot control it.
+	// DONE: add an RPC message called Fetch that takes Empty and returns ChatMessages (note the plural!)
+	Fetch(context.Context, *Empty) (*ChatMessages, error)
 	// User fetches a list of currently active users.
 	List(context.Context, *Empty) (*UserList, error)
 	// Sent by the user to inform the server they are leaving. The server can then
@@ -104,6 +140,12 @@ type UnimplementedWhatsUpServer struct{}
 
 func (UnimplementedWhatsUpServer) Connect(context.Context, *Registration) (*AuthToken, error) {
 	return nil, status.Error(codes.Unimplemented, "method Connect not implemented")
+}
+func (UnimplementedWhatsUpServer) Send(context.Context, *ChatMessage) (*Success, error) {
+	return nil, status.Error(codes.Unimplemented, "method Send not implemented")
+}
+func (UnimplementedWhatsUpServer) Fetch(context.Context, *Empty) (*ChatMessages, error) {
+	return nil, status.Error(codes.Unimplemented, "method Fetch not implemented")
 }
 func (UnimplementedWhatsUpServer) List(context.Context, *Empty) (*UserList, error) {
 	return nil, status.Error(codes.Unimplemented, "method List not implemented")
@@ -146,6 +188,42 @@ func _WhatsUp_Connect_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WhatsUpServer).Connect(ctx, req.(*Registration))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WhatsUp_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WhatsUpServer).Send(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WhatsUp_Send_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WhatsUpServer).Send(ctx, req.(*ChatMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WhatsUp_Fetch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WhatsUpServer).Fetch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WhatsUp_Fetch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WhatsUpServer).Fetch(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -196,6 +274,14 @@ var WhatsUp_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Connect",
 			Handler:    _WhatsUp_Connect_Handler,
+		},
+		{
+			MethodName: "Send",
+			Handler:    _WhatsUp_Send_Handler,
+		},
+		{
+			MethodName: "Fetch",
+			Handler:    _WhatsUp_Fetch_Handler,
 		},
 		{
 			MethodName: "List",
