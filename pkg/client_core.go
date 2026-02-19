@@ -38,6 +38,20 @@ func (e *DisconnectError) Error() string {
 */
 func Register(client WhatsUpClient, user string) (context.Context, error) {
 
+    // call Connect to get auth token 
+    auth, err := client.Connect(context.Background(), &Registration{SourceUser: user})
+    if err != nil {
+        return nil, err // RPC failed
+    }
+
+    // ensure token is received 
+    if auth == nil || auth.Token == "" {
+        return nil, errors.New("empty auth token")
+    }
+
+    // store token in outgoing metadata context
+    ctx := metadata.AppendToOutgoingContext(context.Background(), "token", auth.Token)
+    return ctx, nil
 }
 
 // A helper function that returns an active client connection to the
@@ -97,12 +111,22 @@ func Execute(client WhatsUpClient, ctx context.Context, arguments ...string) (st
 
             return fmt.Sprintf("%s\n", strings.Join(all, "\n")), nil
 
+            
+        // TODO: Implement the client RPC call for List!
+        // This should print a comma-separated string of all users returned by
+        // the RPC, ending with a newline character "\n", to the console.
+        // The order of the users printed does not matter.
+
         case "list":
 
-            // TODO: Implement the client RPC call for List!
-            // This should print a comma-separated string of all users returned by
-            // the RPC, ending with a newline character "\n", to the console.
-            // The order of the users printed does not matter.
+            // call the List RPC
+            users, err := client.List(ctx, &Empty{})
+            if err != nil {
+                return "", err 
+            }
+
+            return fmt.Sprintf("%s\n", strings.Join(users.Users, ", ")), nil
+            
 
         case "quit":
 
