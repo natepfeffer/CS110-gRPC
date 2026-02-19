@@ -1,5 +1,9 @@
 # Project 1: gRPC
 
+# People
+
+Lawrence Adhinatha and Nate Pfeffer
+
 ### Task
 
 Create a gRPC server and client that successfully communicate with each other. [Handout is here](https://docs.google.com/document/d/1kKzu7bQ8CPMh06ZE60QBgZjtddfJWKpjWUT6BRXP1vc/edit?usp=sharing).

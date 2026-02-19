@@ -41,7 +41,7 @@ func Register(client WhatsUpClient, user string) (context.Context, error) {
     // call Connect to get auth token 
     auth, err := client.Connect(context.Background(), &Registration{SourceUser: user})
     if err != nil {
-        return nil, err // RPC failed
+        return nil, err
     }
 
     // ensure token is received 
