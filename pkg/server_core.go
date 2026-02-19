@@ -100,7 +100,7 @@ func (s Server) Send(ctx context.Context, msg *ChatMessage) (*Success, error) {
 		msg.User = user
 		values <- msg
 		return &Success{
-			Ok: true
+			Ok: true,
 		}, nil
 	}
 
@@ -115,20 +115,37 @@ func (s Server) Send(ctx context.Context, msg *ChatMessage) (*Success, error) {
 //
 // TODO: Implement Fetch. If any errors occur, return any error message you'd like.
 func (s Server) Fetch(ctx context.Context, _ *Empty) (*ChatMessages, error) {
+
 	// get user
 	user := fmt.Sprintf("%v", ctx.Value("username"))
-	
-	// ensure inbox exists to fetch from
-	messages, ok := s.Inboxes[user]
-	if !ok {
-        return nil, errors.New("User is not logged in")
-    }
 
-	// consume all messages from inbox
-	for length := BATCH_SIZE; length >= 0; length -= 1 {
-		// select each "batch" of messages
+	// ensure inbox exists
+	inbox, ok := s.Inboxes[user]
+	if !ok {
+		return nil, errors.New("User is not logged in")
 	}
+
+	// prepare response
+	result := &ChatMessages{
+		Messages: []*ChatMessage{},
+	}
+
+	// consume messages up to BATCH_SIZE
+	for i := 0; i < BATCH_SIZE; i++ {
+		select {
+		case msg, ok := <-inbox:
+			if !ok {
+				return result, nil
+			}
+			result.Messages = append(result.Messages, msg)
+		default:
+			return result, nil
+		}
+	}
+
+	return result, nil
 }
+
 
 // Implementation of the List method defined in our `.proto` file.
 // Should consume from the inbox channel for the current user.
