@@ -125,8 +125,8 @@ func Execute(client WhatsUpClient, ctx context.Context, arguments ...string) (st
                 return "", err 
             }
 
-            return fmt.Sprintf("%s\n", strings.Join(users.Users, ", ")), nil
-            
+            return fmt.Sprintf("%s\n", strings.Join(users.Users, ",")), nil
+
 
         case "quit":
 
